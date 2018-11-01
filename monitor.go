@@ -5,15 +5,17 @@ package main
 import (
 	//pacote para trabalhar com texto
 	"fmt"
-	"net/http"
-
 	//pacote para manipular eventos do sistema operacional
 	"os"
 	//pacote para manipular requisições http
+	"net/http"
+	//pacote para analizar valores do códito
+	"reflect"
 )
 
 //Função principal
 func main() {
+	exibirNomes()
 	for {
 		exibeMenu()
 		//Auto declarando variavel e recebendo o valor da função
@@ -87,6 +89,14 @@ func exibeMenu() {
 //Manipulando requisições http
 func iniciarMonitoramento() {
 	fmt.Println("Monitorando...")
+	//Array em go não pode iniciar sem um tamanho
+	var sites [4]string
+	sites[0] = "https://random-status-code.herokuapp.com/"
+	sites[1] = "https://google.com.br/"
+	sites[2] = "https://alura.com.br/"
+	sites[3] = "https://youtube.com.br/"
+
+	fmt.Println(sites)
 	// Site para testar se esta online
 	site := "https://random-status-code.herokuapp.com/"
 	// realizando um get
@@ -103,4 +113,18 @@ func devolveNomeEIdade() (string, int) {
 	nome := "Paulo"
 	idade := 20
 	return nome, idade
+}
+
+//trabalhando com coleções, slices
+func exibirNomes() {
+	nome := []string{"Paulo", "Bruna", "Rita"}
+	//Adicionar novos itens no slice
+	nome = append(nome, "Apararecida")
+	fmt.Println(nome)
+	//capturando o tipo da variavel
+	fmt.Println(reflect.TypeOf(nome))
+	//capturando o tamanho do array nome
+	fmt.Println(len(nome))
+	//capacidade do slice
+	fmt.Println(cap(nome))
 }
