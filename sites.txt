@@ -1,0 +1,4 @@
+https://random-status-code.herokuapp.com/
+https://google.com.br/
+https://alura.com.br/
+https://youtube.com.br/

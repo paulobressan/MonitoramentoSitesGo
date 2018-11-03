@@ -3,6 +3,7 @@ package main
 
 //Importando pacotes externos
 import (
+
 	//pacote para trabalhar com texto
 	"fmt"
 	//pacote para manipular eventos do sistema operacional
@@ -13,16 +14,21 @@ import (
 	"reflect"
 	//Pacote time para manipular tempos de execução
 	"time"
+	//pacote para manipular arquivos facilmente
+	// "io/util"
+	//Lendo arquivos e manipulando com bufio
+	"bufio"
 )
 
 //constante de quantos monitoramento vai ser feito
 const monitoramentos = 3
 
 //Tempo de espera de cada monitoramento
-const delay = 5
+const delay = 2
 
 //Função principal
 func main() {
+	LerSitesDoArquivo()
 	for {
 		exibeMenu()
 		//Auto declarando variavel e recebendo o valor da função
@@ -105,11 +111,13 @@ func iniciarMonitoramento() {
 	// sites[3] = "https://youtube.com.br/"
 
 	//SLICES
-	sites := []string{
-		"https://random-status-code.herokuapp.com/",
-		"https://google.com.br/",
-		"https://alura.com.br/",
-		"https://youtube.com.br/"}
+	// sites := []string{
+	// 	"https://random-status-code.herokuapp.com/",
+	// 	"https://google.com.br/",
+	// 	"https://alura.com.br/",
+	// 	"https://youtube.com.br/"}
+
+	sites := LerSitesDoArquivo()
 
 	fmt.Println(sites)
 
@@ -129,6 +137,7 @@ func iniciarMonitoramento() {
 			TestarSite(site)
 		}
 		time.Sleep(delay * time.Second)
+		fmt.Println(time.Now())
 		fmt.Println("")
 	}
 	fmt.Println("")
@@ -139,7 +148,12 @@ func iniciarMonitoramento() {
 }
 
 func TestarSite(site string) {
-	resp, _ := http.Get(site)
+	resp, err := http.Get(site)
+
+	if err != nil {
+		fmt.Println("Ocorreu um erro:", err)
+	}
+
 	if resp.StatusCode == 200 {
 		fmt.Println("Site: ", site, "carregado com sucesso")
 	} else {
@@ -166,4 +180,37 @@ func exibirNomes() {
 	fmt.Println(len(nome))
 	//capacidade do slice
 	fmt.Println(cap(nome))
+}
+
+//Manipulando arquivos
+func LerSitesDoArquivo() []string {
+	var sites []string
+	//MANIPULARA ARQUIVO COM OS
+	//Usando o pacote os para abrir arquivos de forma puramente com o Sistema operacional
+	arquivo, err := os.Open("sites.txt")
+	//tratando erro
+	if err != nil {
+		fmt.Println("Ocorrreu um erro:", err)
+	}
+	//LENDO ARQUIVOS
+	//Lendo arquivo de forma facil abstraido pelo pacote io util
+	//arquivo, err := ioutil.ReadFile("sites.txt")
+	//Convertendo os bytes do arquivo para texto
+	//textoDoArquivo := string(arquivo)
+
+	//MANIPULANDO ARQUIVOS DE FORMA FACIL COM BUFIO
+	//Criando uma leitura do arquivo, é retornado um leitor
+	leitor := bufio.NewReader(arquivo)
+
+	//manipulando o leitor para exibir o texto do arquivo, como parametro é a limitação até onde queremos ler o arquivo
+	//O limitador é o byte representado por uma aspas simples, vamos pegar o texto até o primeiro \n que é a primeira quebra de linha
+	//Ou seja vamos capturar a primeira linha
+	textoDoArquivo, err := leitor.ReadString('\n')
+	//tratando erro
+	if err != nil {
+		fmt.Println("Ocorrreu um erro:", err)
+	}
+
+	fmt.Println(textoDoArquivo)
+	return sites
 }
