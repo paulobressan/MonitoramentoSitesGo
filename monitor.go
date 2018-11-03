@@ -11,15 +11,23 @@ import (
 	"net/http"
 	//pacote para analizar valores do códito
 	"reflect"
+	//Pacote time para manipular tempos de execução
+	"time"
 )
+
+//constante de quantos monitoramento vai ser feito
+const monitoramentos = 3
+
+//Tempo de espera de cada monitoramento
+const delay = 5
 
 //Função principal
 func main() {
-	exibirNomes()
 	for {
 		exibeMenu()
 		//Auto declarando variavel e recebendo o valor da função
 		comando := lerComando()
+
 		// IFS
 		// if comando == 1 {
 		// 	fmt.Println("Monitorando...")
@@ -75,7 +83,7 @@ func lerComando() int {
 	//Ler dados inserido no terminal com o fmt
 	fmt.Scan(&comando)
 	fmt.Println("O comando escolhido foi", comando)
-
+	fmt.Println("")
 	//Retornando comando
 	return comando
 }
@@ -90,16 +98,47 @@ func exibeMenu() {
 func iniciarMonitoramento() {
 	fmt.Println("Monitorando...")
 	//Array em go não pode iniciar sem um tamanho
-	var sites [4]string
-	sites[0] = "https://random-status-code.herokuapp.com/"
-	sites[1] = "https://google.com.br/"
-	sites[2] = "https://alura.com.br/"
-	sites[3] = "https://youtube.com.br/"
+	// var sites [4]string
+	// sites[0] = "https://random-status-code.herokuapp.com/"
+	// sites[1] = "https://google.com.br/"
+	// sites[2] = "https://alura.com.br/"
+	// sites[3] = "https://youtube.com.br/"
+
+	//SLICES
+	sites := []string{
+		"https://random-status-code.herokuapp.com/",
+		"https://google.com.br/",
+		"https://alura.com.br/",
+		"https://youtube.com.br/"}
 
 	fmt.Println(sites)
+
+	// For tradicional
+	// for i := 0; i < len(sites); i++ {
+	// 	fmt.Println(sites[i])
+	// }
+
+	//For criado pelo Go com range
+	// for index, site := range sites {
+	// 	fmt.Println("Site passado", site, "Posição", index)
+	// }
+	for i := 0; i < monitoramentos; i++ {
+		for index, site := range sites {
+			fmt.Println("Testando site:", index, site)
+			// realizando um get
+			TestarSite(site)
+		}
+		time.Sleep(delay * time.Second)
+		fmt.Println("")
+	}
+	fmt.Println("")
+
 	// Site para testar se esta online
-	site := "https://random-status-code.herokuapp.com/"
-	// realizando um get
+	//site := "https://random-status-code.herokuapp.com/"
+
+}
+
+func TestarSite(site string) {
 	resp, _ := http.Get(site)
 	if resp.StatusCode == 200 {
 		fmt.Println("Site: ", site, "carregado com sucesso")
