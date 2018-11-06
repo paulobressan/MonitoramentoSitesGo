@@ -3,7 +3,10 @@ package main
 
 //Importando pacotes externos
 import (
-
+	//O pacote strings contem funções para manipular strings
+	"strings"
+	//Pacote IO trabalha com manipulação de arquivo
+	"io"
 	//pacote para trabalhar com texto
 	"fmt"
 	//pacote para manipular eventos do sistema operacional
@@ -18,13 +21,15 @@ import (
 	// "io/util"
 	//Lendo arquivos e manipulando com bufio
 	"bufio"
+	//Pacote especialista em converter diversos tipos para strings
+	"strconv"
 )
 
 //constante de quantos monitoramento vai ser feito
 const monitoramentos = 3
 
 //Tempo de espera de cada monitoramento
-const delay = 2
+const delay = 0
 
 //Função principal
 func main() {
@@ -156,8 +161,10 @@ func TestarSite(site string) {
 
 	if resp.StatusCode == 200 {
 		fmt.Println("Site: ", site, "carregado com sucesso")
+		registraLog(site, true)
 	} else {
 		fmt.Println("Site:", site, "esta problema para carregar. Status Code:", resp.StatusCode)
+		registraLog(site, false)
 	}
 }
 
@@ -202,15 +209,42 @@ func LerSitesDoArquivo() []string {
 	//Criando uma leitura do arquivo, é retornado um leitor
 	leitor := bufio.NewReader(arquivo)
 
-	//manipulando o leitor para exibir o texto do arquivo, como parametro é a limitação até onde queremos ler o arquivo
-	//O limitador é o byte representado por uma aspas simples, vamos pegar o texto até o primeiro \n que é a primeira quebra de linha
-	//Ou seja vamos capturar a primeira linha
-	textoDoArquivo, err := leitor.ReadString('\n')
-	//tratando erro
+	//Percorrer todas linhas do array quebrando-o com o break se o arquivo terminar
+	for {
+		//manipulando o leitor para exibir o texto do arquivo, como parametro é a limitação até onde queremos ler o arquivo
+		//O limitador é o byte representado por uma aspas simples, vamos pegar o texto até o primeiro \n que é a primeira quebra de linha
+		//Ou seja vamos capturar a primeira linha
+		site, err := leitor.ReadString('\n')
+		//Ao capturar a linha, ela vem com o \n oculto por editores, porem ao exibir no terminal
+		//Esses \n vai pular uma linha no terminal. Para remover vamos usar a função TrimSpace
+		site = strings.TrimSpace(site)
+		sites = append(sites, site)
+		//tratando erro que informa que o arquivo terminou
+		if err == io.EOF {
+			break
+		}
+
+		fmt.Println(site)
+	}
+	//fechar o arquivo depois de usar
+	arquivo.Close()
+	return sites
+}
+
+//Gravar log em arquivos de textos
+func registraLog(site string, status bool) {
+	//Abrir arquivo, se não existir criar arquivo
+	//A função OpenFile espera como primeiro parametro o nome do arquivo, como segundo flags de manipulação,
+	//como primeira flag vamos indicar para ler e escrever e se o arquivo não existir vamos crialo
+	//O terceiro parametro é a permissão de manipulação do arquivo no sistema operacional
+	arquivo, err := os.OpenFile("log.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
-		fmt.Println("Ocorrreu um erro:", err)
+		fmt.Println("Ocorreu um erro ao abrir arquivo", err)
 	}
 
-	fmt.Println(textoDoArquivo)
-	return sites
+	//A função FormatBool formata o boleando para uma string
+	arquivo.WriteString(site + "- Online: " + strconv.FormatBool(status) + "\n")
+	fmt.Println(arquivo)
+	//fechar arquivo
+	arquivo.Close()
 }
