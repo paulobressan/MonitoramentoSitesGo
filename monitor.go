@@ -7,6 +7,8 @@ import (
 	"strings"
 	//Pacote IO trabalha com manipulação de arquivo
 	"io"
+	//Pacote para manipulação de arquivo
+	"io/ioutil"
 	//pacote para trabalhar com texto
 	"fmt"
 	//pacote para manipular eventos do sistema operacional
@@ -18,7 +20,6 @@ import (
 	//Pacote time para manipular tempos de execução
 	"time"
 	//pacote para manipular arquivos facilmente
-	// "io/util"
 	//Lendo arquivos e manipulando com bufio
 	"bufio"
 	//Pacote especialista em converter diversos tipos para strings
@@ -55,7 +56,7 @@ func main() {
 		case 1:
 			iniciarMonitoramento()
 		case 2:
-			fmt.Println("Exibindo logs...")
+			imprimeLogs()
 		case 0:
 			fmt.Println("Saindo do programa...")
 			//terminar execução com sucesso
@@ -248,4 +249,13 @@ func registraLog(site string, status bool) {
 	fmt.Println(arquivo)
 	//fechar arquivo
 	arquivo.Close()
+}
+
+func imprimeLogs() {
+	fmt.Println("Exibindo logs...")
+	arquivo, err := ioutil.ReadFile("log.txt")
+	if err != nil {
+		fmt.Println("Erro ao ler arquivo", err)
+	}
+	fmt.Println(string(arquivo))
 }
