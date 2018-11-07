@@ -242,8 +242,9 @@ func registraLog(site string, status bool) {
 		fmt.Println("Ocorreu um erro ao abrir arquivo", err)
 	}
 
+	//Format vai formatar a data de acordo com o que precisamos. O go usa valores de contantes para formatar datas
 	//A função FormatBool formata o boleando para uma string
-	arquivo.WriteString(site + "- Online: " + strconv.FormatBool(status) + "\n")
+	arquivo.WriteString(time.Now().Format("02/01/2006 15:04:05") + " - " + site + " - Online: " + strconv.FormatBool(status) + "\n")
 	fmt.Println(arquivo)
 	//fechar arquivo
 	arquivo.Close()
