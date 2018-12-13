@@ -34,6 +34,7 @@ const delay = 0
 
 //Função principal
 func main() {
+	imprimeLogsIniciacao()
 	LerSitesDoArquivo()
 	for {
 		exibeMenu()
@@ -258,4 +259,13 @@ func imprimeLogs() {
 		fmt.Println("Erro ao ler arquivo", err)
 	}
 	fmt.Println(string(arquivo))
+}
+
+func imprimeLogsIniciacao() {
+	arquivo, err := os.OpenFile("logInit.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		fmt.Println("Erro ao gerar log de iniciação", err)
+	}
+	arquivo.WriteString(time.Now().Format("02/01/2006 15:04:05") + " - " + "Acesso Permitido\n")
+	arquivo.Close()
 }
